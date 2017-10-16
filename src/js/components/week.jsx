@@ -27,13 +27,14 @@ export default class Week extends React.Component {
     return weekToRender.map((day, index) => {
       let formattedDate = helpers.getMomentFromCalendarJSDateElement(day);
       const weekDay = formattedDate.format('dddd').toLowerCase();
+      const timeslotsForDay = helpers.timeslotsForDayOfWeek(day.day, timeslots);
       if (renderDays[weekDay]){
         return (
           <Day
             key = { index }
             onTimeslotClick = { this._onTimeslotClick.bind(this) }
             initialDate = { initialDate }
-            timeslots = { timeslots }
+            timeslots = { timeslotsForDay }
             timeslotProps = { timeslotProps }
             selectedTimeslots = { selectedTimeslots }
             disabledTimeslots = { disabledTimeslots }

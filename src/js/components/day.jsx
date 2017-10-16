@@ -61,8 +61,9 @@ export default class Day extends React.Component {
           description += ' - ';
         }
       }
+      var slotArr = slot[0].split(':');
       let timeslotDates = {
-        startDate: momentTime.clone().add(slot[0], timeslotProps.format),
+        startDate: momentTime.clone().add(slotArr[0], 'hours').add(slotArr[1], 'minutes'),
         endDate: momentTime.clone().add(slot[slot.length - 1], timeslotProps.format),
       };
 
@@ -102,16 +103,41 @@ export default class Day extends React.Component {
   _onTimeslotClick(index) {
     const {
       timeslots,
-      timeslotFormat,
       momentTime,
       onTimeslotClick,
     } = this.props;
 
+    const startTimeSlot = timeslots[index][0].split(':');
+    let startTime = momentTime.clone();
+    let endTime = momentTime.clone();
+    if (startTimeSlot.length > 1) {
+      startTime.add(Number(startTimeSlot[0]), 'hours');
+      startTime.add(Number(startTimeSlot[1]),'minutes');
+    }
+    else {
+      startTime.add(Number(startTimeSlot[0]),'hours');
+    }
+    if (timeslots[index][1]) {
+      const endTimesplot = timeslots[index][1].split(':');
+      if (endTimesplot.length > 1) {
+        endTime.add(Number(endTimesplot[0]),'hours');
+        endTime.add(Number(endTimesplot[1]),'minutes');
+      }
+      else {
+        endTime.add(Number(endTimesplot[0]),'hours');
+        // default to add 30 minutes
+        endTime.add(30, 'minutes');
+      }
+    }
+    else {
+      endTime.add(Number(startTimeSlot[0]),'hours');
+      // default to add 30 minutes
+      endTime.add(30, 'minutes');
+    }
     const timeslot = {
-      startDate: momentTime.clone().add(timeslots[index][0], timeslotFormat),
-      endDate: momentTime.clone().add(timeslots[index][1], timeslotFormat),
+      startDate: startTime,
+      endDate: endTime,
     };
-
     onTimeslotClick(timeslot);
   }
 }
@@ -120,7 +146,7 @@ Day.defaultProps = {
   timeslotFormat: DEFAULT_TIMESLOT_FORMAT,
   timeslotShowFormat: DEFAULT_TIMESLOT_SHOW_FORMAT,
   renderTitle: (momentTime) => {
-    return momentTime.format('dddd (D)');
+    return momentTime.format('ddd (D)');
   },
 };
 
